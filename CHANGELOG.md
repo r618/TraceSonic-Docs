@@ -12,7 +12,7 @@
 - Patch browser remembers the last selected Factory / User tab
 - Standalone skips session-file writes when the saved state is unchanged
 - Note labels use Yamaha octave numbering (MIDI 60 is C3); sounding pitches are unchanged
-- (Quick) Help in the About section should be much more useful
+- Help in the About section should be much more useful and can be also opened in browser
 
 ### Added
 - Canvas transforms: transpose, cyclic time shift, time/pitch reversal, amplitude inversion, and rotation
