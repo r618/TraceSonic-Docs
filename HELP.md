@@ -127,6 +127,8 @@ The standalone output fader sets monitoring level. In a plug-in host, use the ho
 
 ## MIDI
 
+The plugin registers as `TraceSonic MIDI` and doesn't process audio when used as MIDI processor (e.g. when used in AUM's/host's MIDI processor slot).
+
 ### Input and base-note hold
 
 Incoming MIDI retunes the whole canvas to the played note; note velocity controls audio level. Input is monophonic with last-note priority. Releasing the latest note returns to the most recently played note still held. A note-on restarts the scan when host transport is not running; during host playback, the scan stays aligned to the host.

@@ -1,5 +1,8 @@
 # Changelog
 
+## next
+	[PERF] skip audio when used as MIDI processor
+
 ## 1.0.2
 
 ### Updates / fixes
