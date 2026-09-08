@@ -2,14 +2,14 @@
 
 ## [next] 1.0.3
 
+### Fixes
+- fixed MIDI input limit for messages (this could lead to crash after some while) 
+
 ### Added
 - Separate `TraceSonic MIDI` processor unit:
 	- audio skipped when used as MIDI processor
 	- Base note hold is automatically turned On, so the playhead/canvas plays with host - it would require MIDI In otherwise - also after patches are loaded, and MIDI Legato and Merge is enabled
-
-### Fixes
-- fixed MIDI input limit for messages (this could lead to crash after some while) 
-
+- MIDI In channel mask added to MIDI settings
 
 ## 1.0.2
 
