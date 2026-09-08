@@ -154,7 +154,7 @@ Several neighbouring rows can round to the same MIDI pitch because 128 rows span
 
 - Merge matching notes: Channel 1, up to 49 pitches. Rows with the same pitch merge; the brightest determines note-on velocity.
 - Cycle rows across channels: rows count from the bottom through channels 1–16, then repeat. All 128 rows retain separate slots; each channel receives eight rows.
-- Split into pitch bands: divides the canvas into 2, 4, or 8 equal horizontal bands, assigned low to high to channels 1–N. Matching pitches merge within each band.
+- Split into pitch bands: divides the canvas into 2, 4, 8, or 16 equal horizontal bands, assigned low to high to channels 1–N. Matching pitches merge within each band.
 
 The strip beside the pitch ruler shows the mapping when active. The MIDI picker preview adds channel numbers and band boundaries.
 
