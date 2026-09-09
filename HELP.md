@@ -53,14 +53,17 @@ Use a narrow harmonic brush for a defined pitched sound. A wider fundamental int
 
 ### Shaped bands and harmonics
 
-All shaped brushes fade as the stroke travels. Shape depends on distance drawn in canvas coordinates, not drawing speed or the final stroke length. Draw left to right for a decay during forward playback; draw right to left for a swell.
+All shaped brushes change amplitude as the stroke travels. Shape depends on distance drawn in canvas coordinates. The Symmetric brushes use the full gesture length for a fade at both ends. The other shaped brushes use distance from the start: draw left to right for a decay during forward playback, or right to left for a swell.
 
 - Fading line: fixed one-row width with a fast decay; almost silent after a horizontal stroke covering one fifth of the canvas. Fading odd harmonics: ratios 1, 3, 5, 7, with the same fade.
 - Blooming band: opens from a fine tip towards 3 st while fading more slowly. Blooming harmonics: ratios 1–6, up to 1.5 st at the fundamental.
 - Widening band: widens to 1 st while fading; reaches full width after horizontal travel of about 18% of the canvas. Widening harmonics: ratios 1–7, with the same shape and fade.
 - Narrowing band: starts at 1 st, narrows to a fine tip over the same travel, and fades. Narrowing harmonics: ratios 1–7, with the same shape and fade.
+- Symmetric band: thin, silent ends with a narrow, full-level centre; up to 1 st, soft edge, core level 0.85.
+- Symmetric harmonics: the same envelope across six trails at ratios 1–6, up to 1 st at the fundamental; rolloff 1.2 and narrowing 0.4. Both appear first in their Shaped group. Their maximum fundamental width matches the Widening and Narrowing brushes.
+- Wide symmetric band / Wide symmetric harmonics: broader versions with the same shape and amplitude envelope; up to 2 st for the band and 1.5 st at the harmonic fundamental. Use these when a fuller middle is wanted. All four use the same soft edge, core level, rolloff and narrowing settings where applicable.
 
-Each new stroke restarts the shape and envelope. Vertical movement also advances the fade, so a curved gesture decays sooner along the time axis than a straight horizontal stroke.
+Each new stroke restarts the shape and envelope. Vertical movement also advances the envelope, so its position is measured along the drawn path, not just the time axis.
 
 ### Textures and hard bands
 

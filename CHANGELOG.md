@@ -10,8 +10,9 @@
 - Separate `TraceSonic MIDI` processor unit:
 	- audio skipped when used as MIDI processor
 	- Base note hold is automatically turned On, so the playhead/canvas plays with host transport (would require MIDI In otherwise) - also after patches are loaded, and MIDI Legato and Merge is enabled
-
 - MIDI In channel mask added to MIDI settings
+
+- symmetric brushes
 
 ## 1.0.2
 
