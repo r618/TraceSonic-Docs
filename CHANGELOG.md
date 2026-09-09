@@ -5,6 +5,7 @@
 ### Updates / fixes
 - fixed MIDI input limit for messages (this could lead to crash after some while)
 - added 16 bands split for MIDI Out channels
+- popovers scroll to near last selected item when opened
 
 ### Added
 - Separate `TraceSonic MIDI` processor unit:
