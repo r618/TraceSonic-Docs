@@ -19,6 +19,7 @@ which use MIDI enabled 8 bands canvas on 'sequencers', each instrument sits on s
 - new whole canvas operations:
 	Fade - reduces strong pixels more than quiet detail
 	Amplify - lifts quiet detail without clipping peaks
+- region got also Amplify
 
 ## 1.0.2
 
