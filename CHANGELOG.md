@@ -14,6 +14,7 @@
 - MIDI In channel mask added to MIDI settings
 - symmetric brushes
 - keyboard shortcuts: Cmd+Z, Cmd+Shift+Z for undo/redo history
+- 'Composition study': a coherent set of techno inspired sequencing and simple instruments patches and patterns which use MIDI enabled 8 bands canvas on 'sequencers', each instrument sits on separate MIDI channel
 
 ## 1.0.2
 
