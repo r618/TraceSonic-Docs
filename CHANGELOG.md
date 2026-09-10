@@ -4,6 +4,7 @@
 
 ### Updates / fixes
 - fixed MIDI input limit for messages (this could lead to crash after some while)
+- fixed a startup crash when connecting to new/updated audio output
 - added 16 bands split for MIDI Out channels
 - popovers scroll to near last selected item when opened
 
