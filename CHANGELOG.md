@@ -1,6 +1,6 @@
 # Changelog
 
-## [next] 1.0.3
+## 1.0.3
 
 ### Updates / fixes
 - fixed MIDI input limit for messages (this could lead to crash after some while)
