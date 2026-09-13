@@ -16,7 +16,7 @@ Drag to paint with the selected **Brush**. **Eraser** uses that brush's shape, w
 
 Main controls:
 
-- **Run / Stop:** starts or stops local playback. Hidden when the host supplies transport state.
+- **Run / Stop:** starts or stops local playback. Available only in the standalone app.
 - **Pass length in seconds:** scan duration without host transport. Steppers cover 0.05–10 seconds; direct entry accepts 0.05–99.99 seconds.
 - **Loop length in beats:** scan duration with host transport, from 1–64 beats per pass at the host tempo.
 - **Scan direction:** forward, reverse, or ping-pong.
