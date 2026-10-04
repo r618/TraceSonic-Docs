@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.4
+- Canvas/Region Fade/Amplify updated
+
 ## 1.0.3
 
 ### Updates / fixes

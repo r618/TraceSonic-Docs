@@ -106,13 +106,16 @@ Open **Canvas** beside Base note. Operations act on the combined painting, inclu
 
 Base note transposes the sounding frequencies without editing the image; Canvas Transpose moves the image within its fixed pitch range.
 
+**Fade** halves amplitude across the whole canvas. **Amplify** doubles it, capped at full level. Canvas and region level actions use the same uniform gain/operation.
+
 ### Region processing and echo
 
-Under **Canvas → Region**, choose **Fade or reduce**, then a process. The picker closes and the next drag selects a rectangle. Release to apply; a tap without a region cancels. The Canvas button and canvas overlay identify the armed process. Another toolbar or timeline interaction cancels it.
+Under **Canvas → Selectable Region**, choose **Fade or amplify**, then a process. The picker closes and the next drag selects a rectangle. Release to apply; a tap without a region cancels. The Canvas button and canvas overlay identify the armed process. Another toolbar or timeline interaction cancels it.
 
 - **Fade region in:** multiplies the existing amplitude by a linear ramp from zero at the left edge to full level at the right.
 - **Fade region out:** applies the opposite ramp.
 - **Reduce region level:** halves amplitude inside the rectangle. Repeat for further reduction.
+- **Amplify region level:** doubles amplitude inside the rectangle, capped at full level.
 
 Fades always run left to right, regardless of drag direction. Selection ignores brush shape, eraser state, and pitch snap; pixels outside the rectangle are unchanged.
 
