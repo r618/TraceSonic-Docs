@@ -1,179 +1,157 @@
 # TraceSonic Help
 
-## Canvas and process overview
+## Canvas and playback
 
-TraceSonic reads pixels as a spectrum. Horizontal position is time; vertical position is logarithmic pitch, from the **Base note** at the bottom to four octaves above it at the top. Pixel brightness controls amplitude. Black and fully transparent pixels are silent.
+TraceSonic is a pixel-driven experimental additive synthesizer. Horizontal position is time; vertical position is logarithmic pitch, from **Base note** to four octaves above it. Luminance × opacity sets amplitude; black and transparent pixels are silent.
 
-The audio grid has 512 time columns and 128 pitch rows, with one oscillator per row. A thin horizontal line sustains a narrow pitch band; a vertical mark sounds many frequencies together. Diagonal lines produce pitch movement. Row amplitudes interpolate between adjacent columns during playback.
+The audio grid has 512 time columns and one row per oscillator, with amplitude interpolation between columns. Canvas storage and PNG export are 2048 pixels wide and at least 512 pixels high, depending on # of used oscillators (see below).
 
-Build the spectrum by painting with brushes, overlaying patterns or images, and transforming the canvas. These all contribute to the same amplitude grid. The stored canvas and PNG export normally use 2048 × 512 pixels. Each audio cell occupies a 4 × 4 block, averaged when read back into the engine.
+- **Run / Stop:** standalone playback.
+- **Pass length:** 0.05–99.99 seconds without host transport; ± buttons step by 0.1 seconds.
+- **Loop length:** 1–64 beats with host transport, at host tempo.
+- **Scan direction:** forward, reverse or ping-pong.
+- **Base note:** transposes the oscillator bank without changing the image.
 
-### Editing and playback
+Rulers show pitch and seconds/beats. Faded pitch labels indicate frequencies above the audio cutoff (`0.45 × sample rate`), which remain editable but silent. Note names use Yamaha numbering: MIDI 60 is **C3**.
 
-Drag to paint with the selected **Brush**. **Eraser** uses that brush's shape, width, texture, and harmonic trails to remove touched cells completely; it ignores the brush's level fade. Press Eraser again to resume painting.
+### Paint and Perform
 
-**Undo** and **Redo** step through completed strokes, patterns, image imports, transforms, region processes, and **Clean**. Clean empties the canvas. Edits can be made during playback; sound changes as the scan reaches the affected pixels.
+Use **Canvas mode** selector next to Undo/Redo to switch between:
 
-Main controls:
+- **Paint:** draw with the selected brush. **Eraser** removes its footprint, including harmonic trails, without applying the brush's level fade.
+- **Perform:** hold or drag up to five touches to play local regions without editing. Each region loops independently over the current pass length and scan direction. The brush sets region size and round/square footprint. Active touches replace the full-canvas scan; releasing them returns to normal playback or the release tail.
 
-- **Run / Stop:** starts or stops local playback. Available only in the standalone app.
-- **Pass length in seconds:** scan duration without host transport. Steppers cover 0.05–10 seconds; direct entry accepts 0.05–99.99 seconds.
-- **Loop length in beats:** scan duration with host transport, from 1–64 beats per pass at the host tempo.
-- **Scan direction:** forward, reverse, or ping-pong.
-- **Base note:** retunes the entire canvas.
-
-The left ruler shows sounding notes and frequencies; the bottom ruler shows seconds or beats. Pitch labels adapt to the available height and follow incoming MIDI transposition. Faded labels mark frequencies above the engine's Nyquist limit (pixels there remain editable but are silent). Note names use Yamaha numbering: middle C, MIDI note 60, is **C3**.
+**Undo / Redo** covers strokes, patterns, imports, transforms, region processing and **Clean**. Shortcuts: **Cmd+Z / Cmd+Shift+Z**. Clean clears the canvas. Edits also work during playback.
 
 ## Brushes
 
-**Soft round** is the default. Brush widths are specified in semitones and stay consistent across window sizes. `st` means semitones; one audio-row interval is about 0.378 st. Widths below describe the full nominal stamp, including its soft edge. Grid rounding can change the occupied width by about one row.
+Widths are fixed in semitones (`st`), independent of window size and oscillator count. Fine brushes retain their default-grid width of approximately 0.38 st; they are not limited to one row at higher counts.
 
-### Soft bands
+### Soft and textured bands
 
-These maintain their width and level along the stroke. Soft edges reduce amplitude towards the edge of the pitch band.
+- **Soft round / Wide soft round / Veil:** approximately 1.5 / 3 / 6 st, with soft amplitude edges.
+- **Grain / Wide grain:** 3 / 6 st, with irregular edges, levels and gaps.
+- **Spray:** 7 st, sparse coverage.
+- **Fine / Small / Medium / Wide hard round:** 0.38 / 1 / 2 / 4 st, with hard edges.
+- **Hard square:** 3 st, square footprint.
 
-- Soft round: ~1.5 st; general painting with a soft spectral edge.
-- Wide soft round: ~3 st; broader, quieter bands.
-- Veil: ~6 st; quiet spectral layers beneath other marks.
+### Harmonics and intervals
 
-### Harmonics & intervals
+Ratios are relative to the drawn fundamental. Upper partials are narrower and quieter; partials outside the canvas are clipped.
 
-Harmonic brushes paint several trails above the drawn fundamental. Upper partials are quieter and narrower; trails beyond the canvas are clipped. Ratios are relative to the fundamental, not equal-tempered note steps.
+Brushes properties:
 
-Fundamental widths and frequency ratios:
+| Brush | Fundamental width | Frequency ratios |
+| Soft harmonics | ~1.5 st | 1–5 |
+| Harmonic thread | ~0.38 st | 1–8 |
+| Narrow harmonics | ~1 st | 1–6 |
+| Full harmonics | ~1.5 st | 1–6 |
+| Odd harmonics | ~0.75 st | 1, 3, 5, 7, 9 |
+| Fifth dyad | ~0.75 st per trail | 1, 1.5; equal level |
 
-- Soft harmonics: ~1.5 st, 1–5
-- Harmonic thread: 1 row, 1–8
-- Narrow harmonics: ~1 st, 1–6
-- Full harmonics: ~1.5 st, 1–6
-- Odd harmonics: ~0.75 st, 1, 3, 5, 7, 9
-- Fifth dyad: ~0.75 st per trail; two equal-level trails at ratios 1 and 1.5, about 7.02 st apart
-
-Use a narrow harmonic brush for a defined pitched sound. A wider fundamental introduces a band of frequencies around each partial. The selected oscillator also adds its own harmonics; see **Oscillators**.
+Waveforms can add further harmonics to the painted partials.
 
 ### Shaped bands and harmonics
 
-All shaped brushes change amplitude as the stroke travels. Shape depends on distance drawn in canvas coordinates. The Symmetric brushes use the full gesture length for a fade at both ends. The other shaped brushes use distance from the start: draw left to right for a decay during forward playback, or right to left for a swell.
+Amplitude and width follow distance along the gesture, including vertical travel. Each stroke restarts the envelope. For forward playback, draw left-to-right for decay or right-to-left for a swell.
 
-- Fading line: fixed one-row width with a fast decay; almost silent after a horizontal stroke covering one fifth of the canvas. Fading odd harmonics: ratios 1, 3, 5, 7, with the same fade.
-- Blooming band: opens from a fine tip towards 3 st while fading more slowly. Blooming harmonics: ratios 1–6, up to 1.5 st at the fundamental.
-- Widening band: widens to 1 st while fading; reaches full width after horizontal travel of about 18% of the canvas. Widening harmonics: ratios 1–7, with the same shape and fade.
-- Narrowing band: starts at 1 st, narrows to a fine tip over the same travel, and fades. Narrowing harmonics: ratios 1–7, with the same shape and fade.
-- Symmetric band: thin, silent ends with a narrow, full-level centre; up to 1 st, soft edge, core level 0.85.
-- Symmetric harmonics: the same envelope across six trails at ratios 1–6, up to 1 st at the fundamental; rolloff 1.2 and narrowing 0.4. Both appear first in their Shaped group. Their maximum fundamental width matches the Widening and Narrowing brushes.
-- Wide symmetric band / Wide symmetric harmonics: broader versions with the same shape and amplitude envelope; up to 2 st for the band and 1.5 st at the harmonic fundamental. Use these when a fuller middle is wanted. All four use the same soft edge, core level, rolloff and narrowing settings where applicable.
-
-Each new stroke restarts the shape and envelope. Vertical movement also advances the envelope, so its position is measured along the drawn path, not just the time axis.
-
-### Textures and hard bands
-
-- Grain / Wide grain: 3 / 6 st; irregular edges, level variation, and gaps.
-- Spray: 7 st; sparse cells across a broad band.
-- Fine / Small / Medium / Wide hard round: 1 row / 1 / 2 / 4 st; constant level with abrupt spectral edges.
-- Hard square: 3 st; square stamps with hard edges and constant level.
-
-Texture gaps are silent cells. Separate strokes can build up the level.
+- **Fading line / Fading odd harmonics:** ~0.38 st fundamental, fast decay; harmonic ratios 1, 3, 5, 7.
+- **Blooming band / Blooming harmonics:** widening, slower decay; up to 3 / 1.5 st; harmonic ratios 1–6.
+- **Widening band / Widening harmonics:** up to 1 st; widening and fading; harmonic ratios 1–7.
+- **Narrowing band / Narrowing harmonics:** start at 1 st, narrow and fade; harmonic ratios 1–7.
+- **Symmetric band / Symmetric harmonics:** fade at both ends over the full gesture; up to 1 st; harmonic ratios 1–6.
+- **Wide symmetric band / Wide symmetric harmonics:** the same envelope, up to 2 / 1.5 st.
 
 ### Pitch snap
 
-Enable **Snap strokes to the scale** in the Brush picker, then choose **Pitch snap scale**. Scales include chromatic, major, natural and harmonic minor, Dorian, Phrygian, Lydian, major and minor pentatonic, whole tone, and octatonic.
-
-Snap constrains the stroke's centre line relative to the base note. Brush width and harmonic trails can still reach pitches outside the scale. A note symbol on the Brush button indicates that snap is active.
+Enable **Snap strokes to the scale**, then select **Pitch snap scale**. Snap constrains the centre line relative to Base note; brush width and harmonic trails can extend outside the scale. Scales include chromatic, major, natural/harmonic minor, Dorian, Phrygian, Lydian, major/minor pentatonic, whole tone and octatonic.
 
 ## Patterns and images
 
-Choose a tile in **Pattern** to apply it to the canvas. **OVR off** overlays it on the existing painting; **OVR on** replaces the painting. The same switch applies to **Open image…**.
+**Pattern** applies a preset image. **OVR off** overlays; **OVR on** replaces the canvas. OVR also applies to **Open image…**. Patterns change pixels, not synthesis or MIDI settings.
 
-Patterns are grouped by content: **Tuned / harmonic**, **Rhythmic / irregular**, **Gesture / glissando**, **Single / unique**, **Braided sweeps**, and **Combined**. Use harmonic patterns as spectral material, rhythmic patterns for time structure, and sweeps for pitch movement. Applying a pattern changes the pixels, not the oscillator or MIDI settings.
+Groups cover tuned/harmonic, rhythmic/irregular, gestures/glissandi, single/unique, braided sweeps and combined material. **Channel cycle**, **Shared rows** and **Register relay** demonstrate MIDI routing; select the matching routing or load the corresponding factory patch.
 
-**Four on the floor** and **Techno kick** provide rhythmic starting points. **Channel cycle**, **Shared rows**, and **Register relay** demonstrate the MIDI routing modes described below. Select the corresponding routing yourself, or load a matching factory patch to recall the full setup.
+**Open image…** stretches and resamples the image onto the audio grid. A 4:1 source matches the default canvas proportions. Colour affects luminance, not waveform.
 
-**Open image…** stretches the image to the canvas. For predictable time and pitch proportions, prepare a 4:1 image. Sound follows luminance and transparency: brighter, more opaque areas produce higher amplitudes; colour itself does not select a timbre. Fine details are averaged onto the 512 × 128 audio grid.
+**Export image…** writes white pixels with amplitude encoded as transparency. Use **Init → Pitch Guide** for octave, fifth and major-third reference marks.
 
-**Export image…** writes a 2048 × 512 PNG with white pixels and amplitude encoded as transparency. It can be edited as a layer in another image application and imported again. The **Pitch Guide** patch in **Init** supplies reference marks at octaves, fifths, and the major third for this workflow.
+## Canvas processing
 
-## Canvas transformations
+**Canvas** operations affect the combined painting.
 
-Open **Canvas** beside Base note. Operations act on the combined painting, including strokes, patterns, and imported images. Each completed operation is one undo step. Immediate actions leave the picker open for repeated or combined edits.
+- **Transpose:** ±1, ±5, ±7 or ±12 st; rounds to source pixels and clips at pitch boundaries.
+- **Shift in time:** ±1/8, ±1/4 or ±1/2 pass, with wraparound.
+- **Reverse time / Invert pitch:** horizontal / vertical reflection.
+- **Invert amplitude:** `1 − amplitude`.
+- **Rotate 90°:** swaps bitmap dimensions; the opposite turn restores the source.
+- **Other degrees:** ±15°, ±30° or ±45°; interpolated, clipped, with silent uncovered areas.
+- **Fade / Amplify:** uniform ×0.5 / ×2 gain; amplification clips at full amplitude.
 
-- Transpose: moves pixels by ±1, ±5, ±7, or ±12 semitones. Content beyond the pitch boundaries is clipped. Shifts are rounded to the nearest source pixel.
-- Shift in time: moves pixels earlier or later by 1/8, 1/4, or 1/2 pass, wrapping at the loop boundary.
-- Reverse time: mirrors the image horizontally.
-- Invert pitch: mirrors the image vertically about the canvas midpoint.
-- Invert amplitude: replaces amplitude with its complement: silence becomes full level and full level becomes silence.
-- Rotate 90° left / right: swaps the bitmap dimensions without losing source pixels. The opposite turn restores the original image.
-- Other degrees: rotates by ±15°, ±30°, or ±45° with interpolation. Preserves image scale, clips at the canvas edges, and leaves uncovered areas silent. These rotations are lossy.
+### Regions and echo
 
-Base note transposes the sounding frequencies without editing the image; Canvas Transpose moves the image within its fixed pitch range.
+Choose **Canvas → Selectable Region → Fade or amplify**, then drag a rectangle. Release applies the process; a tap cancels. Other toolbar or timeline interactions cancel selection.
 
-**Fade** halves amplitude across the whole canvas. **Amplify** doubles it, capped at full level. Canvas and region level actions use the same uniform gain/operation.
+- **Fade region in / out:** linear left-to-right amplitude ramp / inverse ramp.
+- **Reduce / Amplify region level:** ×0.5 / ×2, capped at full amplitude.
 
-### Region processing and echo
+Region processing ignores brush, eraser and snap settings. Outside pixels are unchanged.
 
-Under **Canvas → Selectable Region**, choose **Fade or amplify**, then a process. The picker closes and the next drag selects a rectangle. Release to apply; a tap without a region cancels. The Canvas button and canvas overlay identify the armed process. Another toolbar or timeline interaction cancels it.
-
-- **Fade region in:** multiplies the existing amplitude by a linear ramp from zero at the left edge to full level at the right.
-- **Fade region out:** applies the opposite ramp.
-- **Reduce region level:** halves amplitude inside the rectangle. Repeat for further reduction.
-- **Amplify region level:** doubles amplitude inside the rectangle, capped at full level.
-
-Fades always run left to right, regardless of drag direction. Selection ignores brush shape, eraser state, and pitch snap; pixels outside the rectangle are unchanged.
-
-**Echo 1/8, 1/4, or 1/2** acts immediately on the whole canvas. Copies wrap around the pass, each at half the preceding copy's amplitude. An eighth-pass echo adds seven repeats, a quarter adds three, and a half adds one. Repeats are composited into the image; they stop before returning to the source position.
+**Echo 1/8, 1/4 or 1/2** adds 7, 3 or 1 copies over the whole canvas, wrapping in time. Each copy has half the preceding copy's amplitude. Echo is rendered into the image.
 
 ## Oscillators
 
-The oscillator selection applies to all 128 rows. The seven computed waveforms are **Sine, Triangle, Saw, Square, Pulse (25%), Parabolic**, and **Rectified sine**. The fourteen wavetables are **Bass, Bell, Dust, Formant, Glass, Growl, Hollow, Kick, Nasal, Organ, Pluck, Reed, Velvet**, and **Wire**.
+**Oscillators → Bank**, in control order:
 
-With Sine, each painted row contributes one frequency. Other waveforms add harmonics above each row, including above the canvas's four-octave range where the sample rate permits. A painted harmonic stack therefore becomes a set of harmonic-rich oscillators. Use Sine or a restrained table such as Velvet to preserve a spectrum already drawn in detail; use richer waveforms to colour single-row material.
+- **Count:** 128, 289, 512, 1024, 2048, 4096, 8192 or 16384 oscillators over four octaves. Higher counts increase pitch density and CPU use. Use with caution depending on what your device can handle.
+- **Attack:** 0–2000 ms to approach painted amplitude; zero is immediate.
+- **Release:** 0–5000 ms to decay after a mark or playback ends, without changing its frequency; zero follows the canvas immediately.
+- **Phase spread:** offsets oscillator starting phases: aligned at 0%, random at 100%. Changes how tones combine.
+- **Stereo spread:** alternates neighbouring rows left/right, with less spread at lower pitches.
+- **Detune:** stable offsets up to ±100 cents; zero preserves exact tuning. Range endpoints remain fixed.
 
-The canvas supplies the attack, decay, and rhythm for periodic waveforms such as **Kick** and **Dust**. Oscillator harmonics do not generate extra MIDI notes.
+Attack/Release times specify 99.9% of the amplitude change. Currently they affect audio and not MIDI articulation.
 
-The standalone output fader sets monitoring level. In a plug-in host, use the host's channel controls.
+**Waveform** applies to the whole bank: Sine, Triangle, Saw, Square, Pulse (25%), Parabolic, Rectified sine, or a wavetable. Sine preserves the painted spectrum; other shapes add harmonics.
+
+The amplitude scaling with oscillators count is weighted as `output = masterGain × Σ(amplitude × oscillatorSample) / √count` - simple linear scaling would make output quiet with high counts.
+Painted amplitude is linear, with Attack/Release smoothing -
 
 ## MIDI
 
-The plugin registers as `TraceSonic MIDI` and doesn't process audio when used as MIDI processor (e.g. when used in AUM's/host's MIDI processor slot).
+### Input
 
-### Input and base-note hold
+**MIDI → MIDI In** selects channels 1–16 independently; **All / None** enables or disables the full set. The toolbar shows the active mask.
 
-Incoming MIDI retunes the whole canvas to the played note; note velocity controls audio level. Input is monophonic with last-note priority. Releasing the latest note returns to the most recently played note still held. A note-on restarts the scan when host transport is not running; during host playback, the scan stays aligned to the host.
+Input is monophonic, with last-note priority. Notes transpose the entire canvas; velocity scales audio level. Releasing the latest note returns to the last held note. Note-on restarts the scan without host transport; otherwise the scan follows host position.
 
-**Hold base note**, in the Base note picker, lets the canvas sound at its base note while host transport runs with no MIDI note held. With Hold off, host playback alone is silent. Factory drones enable Hold; other factory patches leave it off. The keyboard symbol on Base note indicates Hold.
+**Hold base note** allows host playback without held MIDI notes. With Hold off, host transport alone is silent - needs a MIDI NoteOn to play something... Standalone **Run** plays regardless of Hold; MIDI can trigger playback with Run off.
 
-In standalone operation, Run sounds the base note regardless of Hold. Incoming MIDI can play the canvas with Run on or off.
+### Output
 
-### Output articulation
+**MIDI → MIDI Out** defaults to Off in the instrument; patches can enable it.
 
-The **MIDI** picker enables note output alongside audio. It defaults to Off, but patches can enable it.
+- **Legato:** holds notes across consecutive lit columns; velocity is set at note-on.
+- **Retrigger:** restarts active notes at every crossed audio-grid column, updating velocity.
 
-- **Legato:** holds notes across consecutive lit columns. Velocity is set at note-on.
-- **Retrigger:** ends and restarts active notes at each crossed column of the 512-column audio grid, measuring velocity again.
+Pitches follow canvas rows, Base note, MIDI transposition and scan direction, rounded to semitones. Detune does not alter output notes. Rows above the audio cutoff or outside MIDI range are omitted. Brightness maps to velocity through a square-root curve. Dense Retrigger output can produce high event rates.
 
-Output pitches are canvas-row frequencies rounded to MIDI notes. They follow base-note changes, incoming MIDI, and scan direction (rows above Nyquist or outside MIDI's note range are omitted). Brightness sets velocity through a square-root curve, giving quieter pixels more usable velocities.
+### Channels
 
-A line that drifts between rows can produce note changes even in Legato. Retrigger operates at the grid rate. With all 128 rows lit, Cycle routing, and a two-second pass, it can produce 32,768 note-ons per second.
+- **Merge matching notes:** channel 1, up to 49 pitches; matching rows use the highest velocity.
+- **Cycle rows across channels:** channels 1–16 repeat from the bottom row upwards. Matching pitches on the same channel merge at high counts.
+- **Split into pitch bands:** 2, 4, 8 or 16 bands, assigned to channels 1–N from low to high. Matching pitches merge within each band.
 
-### Channel routing
+The ruler strip and MIDI picker preview show channel assignments. Channel 10 has no special drum mapping. Route TraceSonic's MIDI output to the receiving instrument in the host; standalone publishes a **TraceSonic** Core MIDI source. **Sequences - MIDI** patches provide routing examples.
 
-Several neighbouring rows can round to the same MIDI pitch because 128 rows span only 48 semitones. The channel-routing setting in the MIDI picker determines how these notes are handled:
+### MIDI processor
 
-- Merge matching notes: Channel 1, up to 49 pitches. Rows with the same pitch merge; the brightest determines note-on velocity.
-- Cycle rows across channels: rows count from the bottom through channels 1–16, then repeat. All 128 rows retain separate slots; each channel receives eight rows.
-- Split into pitch bands: divides the canvas into 2, 4, 8, or 16 equal horizontal bands, assigned low to high to channels 1–N. Matching pitches merge within each band.
-
-The strip beside the pitch ruler shows the mapping when active. The MIDI picker preview adds channel numbers and band boundaries.
-
-Channels partition the picture. A harmonic stack can occupy several channels; a channel is a complete musical part only if the canvas was arranged that way. Channel 10 has no special drum assignment in TraceSonic.
-
-In a host that supports plug-in MIDI routing, select TraceSonic as the receiving instrument's MIDI source. Use channel 1 for Merge, or channel filters to separate Cycle and Split output. Standalone publishes a **TraceSonic** Core MIDI source for other applications.
-
-Factory patches in **Sequences - MIDI** demonstrate channel routing with specially arranged canvases. Where a patch includes a drone, its rows are also included in the MIDI output.
+Use **TraceSonic MIDI** in a host's MIDI processor slot for MIDI-only operation. On patch load it enables Hold; if output was Off, it selects Legato and Merge. These settings remain editable. Otherwise it runs as normal, only without its audio output.
 
 ## Patches
 
-A patch stores the canvas bitmap and its working settings (brush, eraser, pattern and OVR, pitch snap and scale, base note and Hold, oscillator, scan direction, MIDI articulation and routing, and pass length in seconds and beats). It does not store undo history or output level.
+Patches store the canvas, brush/eraser, pattern/OVR, snap/scale, Base note/Hold, oscillator bank/waveform, scan timing/direction and MIDI input/output settings. Undo history and output level are excluded.
 
-Use **Patches** to audition factory sounds during playback. **Save Patch…** saves the current setup under a name. Saving with an existing user-patch name replaces that patch. An asterisk beside the name marks changes from the loaded or saved patch.
+**Load Patch…** opens the Factory/User browser. **Save Patch…** saves or replaces a user patch. An asterisk marks changes from the loaded patch. Hosts store state with the project; standalone restores its last session.
 
-**Reset MIDI & Oscillators** clears held notes and resets oscillator phases. Use it to stop a stuck note. Hosts save instrument state with the project; the standalone app restores its last session at launch.
+**Reset MIDI & Oscillators** clears held notes and resets oscillator phases. **About** contains Help and Changelog, also available in a browser.

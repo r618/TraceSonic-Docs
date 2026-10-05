@@ -1,7 +1,21 @@
 # Changelog
 
 ## 1.0.4
-- Canvas/Region Fade/Amplify updated
+
+- added variable oscillators count setting from 128 to 16384
+.use until your device can handle it, high counts tax CPU
+
+- added **Perform** mode which play the canvas at given / touched spot, instead of paiting:
+.toggle via new button next to Undo/Redo
+.up to five simultaneous touches can be played (each follow selected brush footprint and pass length)
+
+- added per-oscillator **Attack** and **Release**
+
+- added **Phase Spread**, **Stereo spread** and **Detune** for oscillators
+
+- canvas and region Fade/Amplify now both behave identically (uniform ×0.5/×2 gain)
+
+- fixed standalone hosting issues and updated Help
 
 ## 1.0.3
 
