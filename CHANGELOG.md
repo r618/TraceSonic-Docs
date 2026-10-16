@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.5
+- better toolbars layout on smaller screens
+
 ## 1.0.4
 
 - added variable oscillators count setting from 128 to 16384
